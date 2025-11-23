@@ -26,7 +26,11 @@
             display: none;
             width: 100%;
             max-width: 1200px;
-            animation: fadeIn 0.5s ease;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
         .page.active {
@@ -34,6 +38,34 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            opacity: 1;
+            animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .page.exit {
+            animation: slideOut 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.8) rotateY(-15deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotateY(0deg);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotateY(0deg);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.8) rotateY(15deg);
+            }
         }
 
         @keyframes fadeIn {
@@ -228,26 +260,118 @@
             text-shadow: 0 0 10px #ff00ff;
         }
 
-        .error-message {
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid #ff0000;
-            color: #ff6666;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            text-align: center;
-            display: none;
+        /* Sistema de Notificações */
+        .notification-container {
+            position: fixed;
+            right: -400px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9999;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .success-message {
-            background: rgba(0, 255, 0, 0.2);
-            border: 1px solid #00ff00;
-            color: #66ff66;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
+        .notification-container.show {
+            right: 30px;
+        }
+
+        .notification {
+            background: linear-gradient(135deg, rgba(15, 15, 25, 0.98), rgba(25, 25, 40, 0.98));
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 1.2rem 1.5rem;
+            min-width: 320px;
+            max-width: 400px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 2s infinite;
+        }
+
+        .notification.success {
+            border-color: #00ff00;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 255, 0, 0.4);
+        }
+
+        .notification.error {
+            border-color: #ff0000;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.4);
+        }
+
+        .notification.info {
+            border-color: #00ffff;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 255, 255, 0.4);
+        }
+
+        .notification-icon {
+            font-size: 2rem;
+            min-width: 40px;
             text-align: center;
-            display: none;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .notification.success .notification-title {
+            color: #00ff00;
+        }
+
+        .notification.error .notification-title {
+            color: #ff0000;
+        }
+
+        .notification.info .notification-title {
+            color: #00ffff;
+        }
+
+        .notification-message {
+            color: #fff;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .notification-container {
+                right: -350px;
+            }
+            
+            .notification-container.show {
+                right: 10px;
+            }
+
+            .notification {
+                min-width: 280px;
+                max-width: calc(100vw - 20px);
+            }
         }
 
         /* Grid de fundo */
@@ -363,6 +487,9 @@
 <body>
     <div class="grid"></div>
 
+    <!-- Sistema de Notificações -->
+    <div class="notification-container" id="notificationContainer"></div>
+
     <!-- Página Inicial -->
     <div class="page active" id="welcomePage">
         <div class="welcome-container">
@@ -377,7 +504,6 @@
         <div class="auth-container">
             <div class="auth-card">
                 <h2 class="auth-title">REGISTRO</h2>
-                <div class="error-message" id="registerError"></div>
                 <form id="registerForm" onsubmit="handleRegister(event)">
                     <div class="form-group">
                         <label class="form-label">Usuário</label>
@@ -411,7 +537,6 @@
         <div class="auth-container">
             <div class="auth-card">
                 <h2 class="auth-title">LOGIN</h2>
-                <div class="error-message" id="loginError"></div>
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label class="form-label">Usuário</label>
@@ -437,6 +562,7 @@
             <h1 class="dashboard-title">LEX CITY ROLEPLAY</h1>
             <p class="welcome-user">Logado com sucesso! <br><span id="usernameDisplay"></span></p>
             <button class="btn-logout" onclick="handleLogout()">SAIR</button>
+            <br><br><p style="color: rgba(0, 255, 255, 0.5)">Site em desenvolvimento, tenha paciência!</p>
         </div>
     </div>
 
@@ -451,14 +577,66 @@
             document.body.appendChild(particle);
         }
 
-        // Navegação entre páginas
+        // Sistema de Notificações
+        let notificationTimeout;
+
+        function showNotification(type, title, message) {
+            const container = document.getElementById('notificationContainer');
+            
+            // Remove notificação anterior se existir
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+                container.classList.remove('show');
+            }
+
+            // Define ícones baseado no tipo
+            const icons = {
+                success: '😊',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+
+            // Cria a notificação
+            container.innerHTML = `
+                <div class="notification ${type}">
+                    <div class="notification-icon">${icons[type] || '📢'}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                </div>
+            `;
+
+            // Mostra a notificação
+            setTimeout(() => container.classList.add('show'), 100);
+
+            // Remove após 4 segundos
+            notificationTimeout = setTimeout(() => {
+                container.classList.remove('show');
+                setTimeout(() => container.innerHTML = '', 500);
+            }, 4000);
+        }
+
+        // Navegação entre páginas com animação
         function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            const currentPage = document.querySelector('.page.active');
+            const nextPage = document.getElementById(pageId);
+            
+            if (currentPage) {
+                currentPage.classList.add('exit');
+                setTimeout(() => {
+                    currentPage.classList.remove('active', 'exit');
+                }, 600);
+            }
+            
+            setTimeout(() => {
+                nextPage.classList.add('active');
+            }, currentPage ? 300 : 0);
         }
 
         function showAuth() {
-            showPage('registerPage');
+            showPage('loginPage');
         }
 
         function showRegister() {
@@ -492,12 +670,14 @@
             const phone = document.getElementById('regPhone').value;
             const password = document.getElementById('regPassword').value;
             const confirmPassword = document.getElementById('regConfirmPassword').value;
-            const errorDiv = document.getElementById('registerError');
+
+            if (!username || !password || !confirmPassword) {
+                showNotification('error', 'Erro!', 'Preencha os campos obrigatórios!');
+                return;
+            }
 
             if (password !== confirmPassword) {
-                errorDiv.textContent = 'As senhas não coincidem!';
-                errorDiv.style.display = 'block';
-                setTimeout(() => errorDiv.style.display = 'none', 3000);
+                showNotification('error', 'Erro!', 'As senhas não coincidem!');
                 return;
             }
 
@@ -511,17 +691,15 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    showNotification('success', 'Sucesso!', 'Conta criada! Bem-vindo(a)!');
                     localStorage.setItem('lexcity_user', username);
                     document.getElementById('usernameDisplay').textContent = username;
-                    showPage('dashboardPage');
+                    setTimeout(() => showPage('dashboardPage'), 1500);
                 } else {
-                    errorDiv.textContent = data.message || 'Erro ao registrar';
-                    errorDiv.style.display = 'block';
-                    setTimeout(() => errorDiv.style.display = 'none', 3000);
+                    showNotification('error', 'Erro!', data.message || 'Erro ao registrar');
                 }
             } catch (error) {
-                errorDiv.textContent = 'ERRO: Servidor está atualmente offline, aguarde...';
-                errorDiv.style.display = 'block';
+                showNotification('error', 'Servidor Offline', 'Aguarde, estamos trabalhando nisso...');
             }
         }
 
@@ -531,7 +709,11 @@
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
-            const errorDiv = document.getElementById('loginError');
+
+            if (!username || !password) {
+                showNotification('error', 'Erro!', 'Preencha todos os campos!');
+                return;
+            }
 
             try {
                 const response = await fetch('http://163.176.185.77:3001/api/login', {
@@ -543,24 +725,25 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    showNotification('success', 'Sucesso!', `Bem-vindo(a) de volta, ${username}!`);
                     localStorage.setItem('lexcity_user', username);
                     document.getElementById('usernameDisplay').textContent = username;
-                    showPage('dashboardPage');
+                    setTimeout(() => showPage('dashboardPage'), 1500);
                 } else {
-                    errorDiv.textContent = data.message || 'Usuário ou senha incorretos';
-                    errorDiv.style.display = 'block';
-                    setTimeout(() => errorDiv.style.display = 'none', 3000);
+                    showNotification('error', 'Erro!', 'Usuário ou senha incorretos!');
                 }
             } catch (error) {
-                errorDiv.textContent = 'ERRO: Servidor está atualmente offline, aguarde...';
-                errorDiv.style.display = 'block';
+                showNotification('error', 'Servidor Offline', 'Aguarde, estamos trabalhando nisso...');
             }
         }
 
         // Logout
         function handleLogout() {
-            localStorage.removeItem('lexcity_user');
-            showPage('welcomePage');
+            showNotification('info', 'Até logo!', 'Você foi desconectado com sucesso!');
+            setTimeout(() => {
+                localStorage.removeItem('lexcity_user');
+                showPage('welcomePage');
+            }, 1500);
         }
     </script>
 </body>
