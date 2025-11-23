@@ -83,6 +83,7 @@
         /* Página Inicial */
         .welcome-container {
             text-align: center;
+            position: relative;
             z-index: 10;
         }
 
@@ -134,6 +135,20 @@
             background: linear-gradient(90deg, #00ffff, #ff00ff);
             box-shadow: 0 0 30px #00ffff80;
             transform: scale(1.05);
+        }
+
+        /* GIF de fundo na tela de boas-vindas */
+        .welcome-bg-gif {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 790px;
+            max-width: 90vw;
+            opacity: 0.60;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
         }
 
         /* Sistema de Auth */
@@ -670,9 +685,10 @@
     <!-- Página Inicial -->
     <div class="page active" id="welcomePage">
         <div class="welcome-container">
-            <h1 class="title">LEX CITY ROLEPLAY</h1>
-            <p class="subtitle">Bem vindo(a), acesse já o painel da Lex City Roleplay</p>
-            <button class="btn-primary" onclick="showAuth()">Vamos nessa...</button>
+            <img src="/gifs/person-david.gif" alt="Logo Lex City" class="welcome-bg-gif">
+            <h1 class="title" style="position: relative; z-index: 2;">LEX CITY ROLEPLAY</h1>
+            <p class="subtitle" style="position: relative; z-index: 2;">Bem vindo(a), acesse já o painel da Lex City Roleplay</p>
+            <button class="btn-primary" onclick="showAuth()" style="position: relative; z-index: 2;">Vamos nessa...</button>
         </div>
     </div>
 
