@@ -12,22 +12,49 @@
         }
 
         body {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             background: #0a0a0a;
-            overflow: hidden;
+            overflow-x: hidden;
             font-family: 'Arial', sans-serif;
+            padding: 20px;
         }
 
-        .container {
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Página Inicial */
+        .welcome-container {
             text-align: center;
             z-index: 10;
         }
 
         .title {
-            font-size: 5rem;
+            font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: bold;
             color: #fff;
             text-shadow: 
@@ -44,7 +71,7 @@
         }
 
         .subtitle {
-            font-size: 2rem;
+            font-size: clamp(1.2rem, 4vw, 2rem);
             color: #fff;
             text-shadow: 
                 0 0 10px #ff00ff,
@@ -52,6 +79,218 @@
                 0 0 30px #ff00ff,
                 0 0 40px #ff00ff;
             animation: pulse 2s infinite;
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            font-size: 1.25rem;
+            color: #fff;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 0 20px #ff00ff80;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            box-shadow: 0 0 30px #00ffff80;
+            transform: scale(1.05);
+        }
+
+        /* Sistema de Auth */
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            perspective: 1000px;
+        }
+
+        .auth-card {
+            background: rgba(15, 15, 25, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px #00ffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            cursor: pointer;
+            color: #ff00ff;
+            transition: all 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #aaa;
+        }
+
+        .switch-link {
+            color: #00ffff;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .switch-link:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff6666;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #66ff66;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        /* Grid de fundo */
+        .grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: float 3s infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100vh) translateX(50px);
+                opacity: 0;
+            }
         }
 
         @keyframes flicker {
@@ -65,91 +304,144 @@
                     0 0 80px #00ffff,
                     0 0 100px #00ffff;
             }
-            20%, 24%, 55% {
-                text-shadow: none;
-            }
+            20%, 24%, 55% { text-shadow: none; }
         }
 
         @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
-        /* Grid de fundo estilo cyberpunk */
-        .grid {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* Dashboard */
+        .dashboard-container {
             width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-            perspective: 1000px;
-            transform-style: preserve-3d;
+            max-width: 1000px;
+            text-align: center;
         }
 
-        @keyframes gridMove {
-            0% {
-                transform: translateY(0) rotateX(60deg);
-            }
-            100% {
-                transform: translateY(50px) rotateX(60deg);
-            }
+        .dashboard-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 2rem;
         }
 
-        /* Partículas brilhantes */
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #00ffff;
-            box-shadow: 0 0 10px #00ffff;
-            animation: float 3s infinite;
+        .welcome-user {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            margin-bottom: 3rem;
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) translateX(50px);
-                opacity: 0;
-            }
+        .btn-logout {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(90deg, #ff0000, #ff00ff);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        .btn-logout:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
         }
 
         @media (max-width: 768px) {
-            .title {
-                font-size: 3rem;
+            .auth-card {
+                padding: 1.5rem;
             }
-            .subtitle {
-                font-size: 1.5rem;
+            body {
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
     <div class="grid"></div>
-    
-    <div class="container">
-        <h1 class="title">LEX CITY ROLEPLAY</h1>
-        <p class="subtitle">Aguarde, site sendo desenvolvido!</p>
+
+    <!-- Página Inicial -->
+    <div class="page active" id="welcomePage">
+        <div class="welcome-container">
+            <h1 class="title">LEX CITY ROLEPLAY</h1>
+            <p class="subtitle">Bem vindo(a), acesse já o painel da Lex City Roleplay</p>
+            <button class="btn-primary" onclick="showAuth()">Vamos nessa...</button>
+        </div>
+    </div>
+
+    <!-- Página de Registro -->
+    <div class="page" id="registerPage">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">REGISTRO</h2>
+                <div class="error-message" id="registerError"></div>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label class="form-label">Usuário</label>
+                        <input type="text" class="form-input" id="regUsername" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Número de Telefone (Opcional)</label>
+                        <input type="tel" class="form-input" id="regPhone">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-input" id="regPassword" required minlength="6">
+                        <span class="password-toggle" onclick="togglePassword('regPassword')">👁️</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Senha</label>
+                        <input type="password" class="form-input" id="regConfirmPassword" required minlength="6">
+                        <span class="password-toggle" onclick="togglePassword('regConfirmPassword')">👁️</span>
+                    </div>
+                    <button type="submit" class="btn-submit">REGISTRAR</button>
+                </form>
+                <div class="switch-text">
+                    Já tem uma conta? <span class="switch-link" onclick="showLogin()">Faça Login</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Página de Login -->
+    <div class="page" id="loginPage">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">LOGIN</h2>
+                <div class="error-message" id="loginError"></div>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Usuário</label>
+                        <input type="text" class="form-input" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-input" id="loginPassword" required>
+                        <span class="password-toggle" onclick="togglePassword('loginPassword')">👁️</span>
+                    </div>
+                    <button type="submit" class="btn-submit">ENTRAR</button>
+                </form>
+                <div class="switch-text">
+                    Não tem uma conta? <span class="switch-link" onclick="showRegister()">Registre-se</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="page" id="dashboardPage">
+        <div class="dashboard-container">
+            <h1 class="dashboard-title">LEX CITY ROLEPLAY</h1>
+            <p class="welcome-user">Logado com sucesso! <br><span id="usernameDisplay"></span></p>
+            <button class="btn-logout" onclick="handleLogout()">SAIR</button>
+        </div>
     </div>
 
     <script>
+        // Criar partículas
         for(let i = 0; i < 50; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
@@ -157,6 +449,118 @@
             particle.style.animationDelay = Math.random() * 3 + 's';
             particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
             document.body.appendChild(particle);
+        }
+
+        // Navegação entre páginas
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function showAuth() {
+            showPage('registerPage');
+        }
+
+        function showRegister() {
+            showPage('registerPage');
+        }
+
+        function showLogin() {
+            showPage('loginPage');
+        }
+
+        // Toggle senha
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Verificar se já está logado
+        window.onload = function() {
+            const user = localStorage.getItem('lexcity_user');
+            if (user) {
+                document.getElementById('usernameDisplay').textContent = user;
+                showPage('dashboardPage');
+            }
+        }
+
+        // Registro
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const errorDiv = document.getElementById('registerError');
+
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'As senhas não coincidem!';
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
+                return;
+            }
+
+            try {
+                const response = await fetch('http://163.176.185.77:3001/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, phone, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('lexcity_user', username);
+                    document.getElementById('usernameDisplay').textContent = username;
+                    showPage('dashboardPage');
+                } else {
+                    errorDiv.textContent = data.message || 'Erro ao registrar';
+                    errorDiv.style.display = 'block';
+                    setTimeout(() => errorDiv.style.display = 'none', 3000);
+                }
+            } catch (error) {
+                errorDiv.textContent = 'ERRO: Servidor está atualmente offline, aguarde...';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            try {
+                const response = await fetch('http://163.176.185.77:3001/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('lexcity_user', username);
+                    document.getElementById('usernameDisplay').textContent = username;
+                    showPage('dashboardPage');
+                } else {
+                    errorDiv.textContent = data.message || 'Usuário ou senha incorretos';
+                    errorDiv.style.display = 'block';
+                    setTimeout(() => errorDiv.style.display = 'none', 3000);
+                }
+            } catch (error) {
+                errorDiv.textContent = 'ERRO: Servidor está atualmente offline, aguarde...';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Logout
+        function handleLogout() {
+            localStorage.removeItem('lexcity_user');
+            showPage('welcomePage');
         }
     </script>
 </body>
