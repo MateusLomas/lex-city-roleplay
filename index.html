@@ -141,10 +141,22 @@
         .welcome-bg-gif {
             position: absolute;
             top: 50%;
-            left: 50%;
+            left: 25%;
             transform: translate(-50%, -50%);
-            width: 790px;
-            max-width: 90vw;
+            width: 4000px;
+            max-width: 65vw;
+            opacity: 0.60;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+        .welcome-bg-gif2 {
+            position: absolute;
+            top: 50%;
+            left: 75%;
+            transform: translate(-50%, -50%);
+            width: 4000px;
+            max-width: 65vw;
             opacity: 0.60;
             z-index: 1;
             pointer-events: none;
@@ -685,10 +697,11 @@
     <!-- Página Inicial -->
     <div class="page active" id="welcomePage">
         <div class="welcome-container">
-            <img src="/gifs/person-david.gif" alt="Logo Lex City" class="welcome-bg-gif">
+            <img src="/gifs/person-david.gif" alt="Person David" class="welcome-bg-gif">
+            <img src="/gifs/person-carol.gif" alt="Person David 2" class="welcome-bg-gif2">
             <h1 class="title" style="position: relative; z-index: 2;">LEX CITY ROLEPLAY</h1>
             <p class="subtitle" style="position: relative; z-index: 2;">Bem vindo(a), acesse já o painel da Lex City Roleplay</p>
-            <button class="btn-primary" onclick="showAuth()" style="position: relative; z-index: 2;">Vamos nessa...</button>
+            <button class="btn-primary" onclick="showAuth()" style="position: relative; z-index: 2;">< Sim Bora ></button>
         </div>
     </div>
 
