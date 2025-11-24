@@ -6,6 +6,25 @@
     <link rel="icon" type="image/png" href="/img/icon.png">
     <title>Lex City Roleplay</title>
     <style>
+        /* Animação para modal de compra */
+        .purchase-modal-enter {
+            opacity: 0;
+            transform: scale(0.92) translateY(60px);
+            transition: opacity 0.4s, transform 0.4s;
+        }
+        .purchase-modal-enter-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .purchase-modal-exit {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transition: opacity 0.4s, transform 0.4s;
+        }
+        .purchase-modal-exit-active {
+            opacity: 0;
+            transform: scale(0.92) translateY(60px);
+        }
         * {
             margin: 0;
             padding: 0;
@@ -25,41 +44,55 @@
             display: none;
             width: 100%;
             max-width: 1200px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
         .page.active {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
             opacity: 1;
-            animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: pulseIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        /* Centralização só para welcome/login/register */
+        #welcomePage.page.active,
+        #loginPage.page.active,
+        #registerPage.page.active {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-direction: column !important;
+            z-index: 1001 !important;
+            background: transparent;
         }
         .page.exit {
-            animation: slideOut 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: pulseOut 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        @keyframes slideIn {
-            from {
+        @keyframes pulseIn {
+            0% {
                 opacity: 0;
-                transform: translateX(-50%) scale(0.8) rotateY(-15deg);
+                transform: scale(0.85);
             }
-            to {
+            60% {
                 opacity: 1;
-                transform: translateX(-50%) scale(1) rotateY(0deg);
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
-        @keyframes slideOut {
-            from {
+        @keyframes pulseOut {
+            0% {
                 opacity: 1;
-                transform: translateX(-50%) scale(1) rotateY(0deg);
+                transform: scale(1);
             }
-            to {
+            100% {
                 opacity: 0;
-                transform: translateX(-50%) scale(0.8) rotateY(15deg);
+                transform: scale(0.85);
             }
         }
         @keyframes fadeIn {
@@ -416,6 +449,10 @@
             width: 100%;
             max-width: 1200px;
             text-align: center;
+            display: block !important;
+            position: static;
+            left: auto;
+            transform: none;
         }
         .dashboard-title {
             font-size: clamp(2rem, 6vw, 3rem);
@@ -602,6 +639,7 @@
             <ul>
                 <li data-page="home" onclick="selectMenu('home')">🏠 Home</li>
                 <li data-page="rules" onclick="selectMenu('rules')">📜 Regras</li>
+                <li data-page="shop" onclick="selectMenu('shop')">🛒 Shoping / Loja</li>
                 <li data-page="profile" onclick="selectMenu('profile')">👤 Meu Perfil</li>
                 <li onclick="handleLogout()">🚪 Sair</li>
             </ul>
@@ -676,14 +714,14 @@
         </div>
     </div>
     <!-- Dashboard -->
-    <div class="dashboard-container" id="dashboardMain" style="display:none;">
+    <div class="dashboard-container page" id="dashboardMain" style="display:none;">
         <!-- HOME -->
         <div class="dashboard-section" data-section="home">
             <div class="dashboard-header">
                 <h1 class="dashboard-title">LEX CITY ROLEPLAY</h1>
                 <p class="welcome-user">Bem-vindo(a), <span id="usernameDisplay"></span>!</p>
             </div>
-            <div class="dashboard-cards">
+            <div class="dashboard-cards" id="shopCards">
                 <div class="dash-card">
                     <div class="card-icon">🎮</div>
                     <h3 class="card-title">Jogar Agora</h3>
@@ -721,6 +759,278 @@
             </div>
         </div>
 
+        <!-- SHOPING / LOJA -->
+        <div class="dashboard-section" data-section="shop" style="display:none;">
+            <h2 class="dashboard-title">🛒 Shoping / Loja</h2>
+            <h3 style="color:#00ffff;text-align:left;margin:2rem 0 1rem 0;font-size:1.4rem;">💸 Coins</h3>
+            <div class="dashboard-cards">
+                <!-- 25 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="25 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">25 Lex Coins + 10%</h3>
+                    <p class="card-desc">Obtenha 27,50 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 10,00</div>
+                    <button class="card-btn" onclick="openPurchase('25 Lex Coins + 10%', 'Obtenha 27,50 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 10,00', ['27,50 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 50 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="50 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">50 Lex Coins + 20%</h3>
+                    <p class="card-desc">Obtenha 60 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 20,00</div>
+                    <button class="card-btn" onclick="openPurchase('50 Lex Coins + 20%', 'Obtenha 60 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 20,00', ['60 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 100 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="100 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">100 Lex Coins + 40%</h3>
+                    <p class="card-desc">Obtenha 140 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 40,00</div>
+                    <button class="card-btn" onclick="openPurchase('100 Lex Coins + 40%', 'Obtenha 140 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 40,00', ['140 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 250 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="250 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">250 Lex Coins + 50%</h3>
+                    <p class="card-desc">Obtenha 375 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 50,00</div>
+                    <button class="card-btn" onclick="openPurchase('250 Lex Coins + 50%', 'Obtenha 375 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 50,00', ['375 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 350 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="350 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">350 Lex Coins + 60%</h3>
+                    <p class="card-desc">Obtenha 560 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 60,00</div>
+                    <button class="card-btn" onclick="openPurchase('350 Lex Coins + 60%', 'Obtenha 560 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 60,00', ['560 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 500 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="500 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">500 Lex Coins + 70%</h3>
+                    <p class="card-desc">Obtenha 850 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 70,00</div>
+                    <button class="card-btn" onclick="openPurchase('500 Lex Coins + 70%', 'Obtenha 850 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 70,00', ['850 lexcoins'])">Comprar</button>
+                </div>
+            </div>
+            <h3 style="color:#00ffff;text-align:left;margin:2rem 0 1rem 0;font-size:1.4rem;">🎁 Caixas Lex</h3>
+            <div class="dashboard-cards">
+                <!-- LEX VAPOR -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcityvapor.jpg" alt="Lex Vapor" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">LEX VAPOR 💨</h3>
+                    <ul class="card-desc" style="text-align:left;color:#aaa;font-size:0.95rem;margin-bottom:1rem;">
+                        <li>+40% ganho em trabalho</li>
+                        <li>100% de experiência</li>
+                        <li>50% ao ressuscitar</li>
+                        <li>Chama veículo para si</li>
+                        <li>Prioridade na fila do server</li>
+                        <li>Chat vip com os Server Booster</li>
+                        <li>Salário no pay day 500,00</li>
+                        <li>Cargo de Destaque no servidor</li>
+                    </ul>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 80,00</div>
+                    <button class="card-btn" onclick="openPurchase('LEX VAPOR 💨', '', 'R$ 80,00', [
+                        '+40% ganho em trabalho',
+                        '100% de experiência',
+                        '50% ao ressuscitar',
+                        'Chama veículo para si',
+                        'Prioridade na fila do server',
+                        'Chat vip com os Server Booster',
+                        'Salário no pay day 500,00',
+                        'Cargo de Destaque no servidor'])">Comprar</button>
+                </div>
+                <!-- LEX ELITE DO MORRO -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitymorro.jpg" alt="Lex Elite do Morro" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">LEX ELITE DO MORRO ⛰</h3>
+                    <ul class="card-desc" style="text-align:left;color:#aaa;font-size:0.95rem;margin-bottom:1rem;">
+                        <li>Todos benefícios do Lex Vapor +</li>
+                        <li>Redução 25% prisão na cadeia e staff</li>
+                        <li>Salário 1.500 reais no pay day</li>
+                        <li>Abrir ticket exclusivo na área vip</li>
+                        <li>Participa de sorteio mensal (carros, skins, acessórios, etc)</li>
+                        <li>Carro épico (30 dias, renovar para manter)</li>
+                    </ul>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 120,00</div>
+                    <button class="card-btn" onclick="openPurchase('LEX ELITE DO MORRO ⛰', '', 'R$ 120,00', [
+                        'Todos benefícios do Lex Vapor +',
+                        'Redução 25% prisão na cadeia e staff',
+                        'Salário 1.500 reais no pay day',
+                        'Abrir ticket exclusivo na área vip',
+                        'Participa de sorteio mensal (carros, skins, acessórios, etc)',
+                        'Carro épico (30 dias, renovar para manter)'])">Comprar</button>
+                </div>
+                <!-- LEX MAGNATA -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitymagnata.jpg" alt="Lex Magnata" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">LEX MAGNATA 💰</h3>
+                    <ul class="card-desc" style="text-align:left;color:#aaa;font-size:0.95rem;margin-bottom:1rem;">
+                        <li>Todos benefícios do Lex Vapor e Elite do Morro +</li>
+                        <li>Escolhe 1 carro lendário (30 dias)</li>
+                        <li>Salário 3.000 reais no pay day</li>
+                        <li>Skin lendária exclusiva (30 dias)</li>
+                        <li>Redução 50% da prisão e staff</li>
+                        <li>Acessórios exclusivos</li>
+                        <li>Acesso a call da diretoria</li>
+                        <li>Participa de reuniões com donos e influenciadores</li>
+                        <li>Leva ideias e críticas ao projeto</li>
+                        <li>Participa de eventos exclusivos</li>
+                    </ul>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 200,00</div>
+                    <button class="card-btn" onclick="openPurchase('LEX MAGNATA 💰', '', 'R$ 200,00', [
+                        'Todos benefícios do Lex Vapor e Elite do Morro +',
+                        'Escolhe 1 carro lendário (30 dias)',
+                        'Salário 3.000 reais no pay day',
+                        'Skin lendária exclusiva (30 dias)',
+                        'Redução 50% da prisão e staff',
+                        'Acessórios exclusivos',
+                        'Acesso a call da diretoria',
+                        'Participa de reuniões com donos e influenciadores',
+                        'Leva ideias e críticas ao projeto',
+                        'Participa de eventos exclusivos'])">Comprar</button>
+                </div>
+            </div>
+        </div>
+        <!-- PERFIL -->
+        <div class="dashboard-section" data-section="profile" style="display:none;">
+            <!-- Vazio. A notificação será disparada via JS -->
+        </div>
+
+    <!-- Página de Compra (fora dos cards) -->
+    <div class="page" id="purchasePage" style="z-index: 1000; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: rgba(10,10,20,0.92);">
+        <div id="purchasePanel" style="width:100%;max-width:500px;max-height:90vh;overflow-y:auto;background:rgba(15,15,25,0.97);border-radius:18px;padding:2rem 1.5rem;box-shadow:0 0 30px #00ffff30;position:relative;">
+            <button onclick="backToShop()" style="background:none;border:none;color:#00ffff;font-size:1.1rem;display:flex;align-items:center;gap:6px;cursor:pointer;position:absolute;left:1.5rem;top:1.5rem;"><span style='font-size:1.3rem;'>&#8592;</span> Voltar</button>
+            <div style="margin-top:2.5rem;text-align:center;">
+                <div id="purchaseTitle" style="font-size:1.3rem;color:#fff;font-weight:bold;margin-bottom:0.7rem;"></div>
+                <div id="purchasePrice" style="color:#ff00ff;font-size:1.1rem;font-weight:bold;margin-bottom:1.2rem;"></div>
+                <div id="purchaseDesc" style="color:#aaa;font-size:1rem;margin-bottom:1.2rem;"></div>
+                <div id="purchaseRewards" style="margin-bottom:1.5rem;"></div>
+                <div style="margin-bottom:1.2rem;text-align:left;">
+                    <label for="paymentMethod" style="color:#fff;font-weight:bold;">Método de Pagamento <span style="color:#ff00ff">*</span></label>
+                    <select id="paymentMethod" style="width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;" onchange="updatePaymentForm()">
+                        <option value="">Selecione...</option>
+                        <option value="pix">Pix</option>
+                        <option value="boleto">Boleto</option>
+                    </select>
+                </div>
+                <div id="paymentForm"></div>
+                <div style="margin-top:2.5rem;text-align:center;">
+                    <div style="color:#fff;font-weight:bold;margin-bottom:0.7rem;">Métodos de pagamento aceitos:</div>
+                    <div style="display:flex;justify-content:center;gap:2rem;">
+                        <span title="Pix"> <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#00E676"/><path d="M24 14c-2.2 0-4.3.9-5.9 2.4l-1.7 1.7c-3.2 3.2-3.2 8.3 0 11.5l1.7 1.7c3.2 3.2 8.3 3.2 11.5 0l1.7-1.7c3.2-3.2 3.2-8.3 0-11.5l-1.7-1.7C28.3 14.9 26.2 14 24 14z" fill="#fff"/></svg></span>
+                        <span title="Boleto"> <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#222"/><rect x="10" y="14" width="28" height="20" rx="3" fill="#fff"/><rect x="13" y="18" width="22" height="2" rx="1" fill="#222"/><rect x="13" y="22" width="22" height="2" rx="1" fill="#222"/><rect x="13" y="26" width="22" height="2" rx="1" fill="#222"/></svg></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ======== COMPRA DINÂMICA ========
+    function openPurchase(title, desc, price, rewards) {
+        // Esconde só a seção da loja
+        var shopSection = document.querySelector('.dashboard-section[data-section="shop"]');
+        if (shopSection) shopSection.style.display = 'none';
+        // Mostra tela de compra
+        var purchasePage = document.getElementById('purchasePage');
+        var purchasePanel = document.getElementById('purchasePanel');
+        if (purchasePage && purchasePanel) {
+            // Remove classes de animação antes de exibir
+            purchasePanel.classList.remove('purchase-modal-enter', 'purchase-modal-enter-active', 'purchase-modal-exit', 'purchase-modal-exit-active');
+            purchasePage.style.display = 'flex';
+            purchasePage.classList.add('active');
+            // Força reflow para garantir que a animação comece do estado correto
+            void purchasePanel.offsetWidth;
+            // Animação de entrada
+            purchasePanel.classList.add('purchase-modal-enter');
+            setTimeout(() => {
+                purchasePanel.classList.add('purchase-modal-enter-active');
+            }, 10);
+        }
+        // Preenche dados
+        var titleEl = document.getElementById('purchaseTitle');
+        var priceEl = document.getElementById('purchasePrice');
+        var descEl = document.getElementById('purchaseDesc');
+        var rewardsEl = document.getElementById('purchaseRewards');
+        if (titleEl) titleEl.textContent = `Comprando: ${title}`;
+        if (priceEl) priceEl.textContent = price;
+        if (descEl) descEl.textContent = desc;
+        let rewardsHtml = '';
+        if (rewards && rewards.length > 0) {
+            rewardsHtml = '<div style="color:#fff;font-weight:bold;margin-bottom:0.3rem;">Recompensas:</div><ul style="color:#00ffff;text-align:left;max-width:350px;margin:auto;">';
+            for (const r of rewards) rewardsHtml += `<li style='margin-bottom:0.2rem;'>${r}</li>`;
+            rewardsHtml += '</ul>';
+        }
+        if (rewardsEl) rewardsEl.innerHTML = rewardsHtml;
+        var methodEl = document.getElementById('paymentMethod');
+        var formEl = document.getElementById('paymentForm');
+        if (methodEl) methodEl.value = '';
+        if (formEl) formEl.innerHTML = '';
+    }
+
+    function backToShop() {
+        // Animação de saída
+        var purchasePage = document.getElementById('purchasePage');
+        var purchasePanel = document.getElementById('purchasePanel');
+        if (purchasePage && purchasePanel) {
+            purchasePanel.classList.remove('purchase-modal-enter', 'purchase-modal-enter-active');
+            purchasePanel.classList.add('purchase-modal-exit');
+            setTimeout(() => {
+                purchasePanel.classList.add('purchase-modal-exit-active');
+            }, 10);
+            setTimeout(() => {
+                purchasePage.style.display = 'none';
+                purchasePage.classList.remove('active');
+                purchasePanel.classList.remove('purchase-modal-exit', 'purchase-modal-exit-active');
+            }, 400);
+        }
+        // Mostra só a seção shop
+        var shopSection = document.querySelector('.dashboard-section[data-section="shop"]');
+        if (shopSection) shopSection.style.display = 'block';
+    }
+
+    function updatePaymentForm() {
+        const method = document.getElementById('paymentMethod').value;
+        let html = '';
+        if (method === 'pix') {
+            html = `
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Whatsapp <span style='color:#ff00ff'>*</span></label>
+                    <input type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
+                </div>
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Seu Nome <span style='color:#ff00ff'>*</span></label>
+                    <input type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
+                </div>
+                <div style='background:#0a0a0a;border-radius:10px;padding:1rem 0.7rem;margin-bottom:1rem;color:#fff;'>
+                    <div style='font-weight:bold;color:#00ffff;margin-bottom:0.3rem;'>Faça o PIX para:</div>
+                    <div style='font-size:1.1rem;color:#fff;margin-bottom:0.3rem;'>lexcitypix@gmail.com</div>
+                    <div style='color:#aaa;font-size:0.95rem;'>Após o pagamento, envie o comprovante para o Whatsapp informado acima para agilizar a liberação.</div>
+                </div>
+            `;
+        } else if (method === 'boleto') {
+            html = `
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Whatsapp <span style='color:#ff00ff'>*</span></label>
+                    <input type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
+                </div>
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Seu Nome <span style='color:#ff00ff'>*</span></label>
+                    <input type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
+                </div>
+                <div style='background:#0a0a0a;border-radius:10px;padding:1rem 0.7rem;margin-bottom:1rem;color:#fff;'>
+                    <div style='font-weight:bold;color:#00ffff;margin-bottom:0.3rem;'>Boleto gerado após envio dos dados.</div>
+                    <div style='color:#aaa;font-size:0.95rem;'>O boleto será enviado para o Whatsapp informado acima. Após o pagamento, envie o comprovante para agilizar a liberação.</div>
+                </div>
+            `;
+        }
+        document.getElementById('paymentForm').innerHTML = html;
+    }
+    </script>
+                </div>
+            </div>
+        </div>
         <!-- PERFIL -->
         <div class="dashboard-section" data-section="profile" style="display:none;">
             <!-- Vazio. A notificação será disparada via JS -->
@@ -776,8 +1086,21 @@
 
         // ======== PÁGINAS ========
         function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+                p.style.display = 'none';
+            });
+            const page = document.getElementById(pageId);
+            if (page) {
+                page.classList.add('active');
+                if (["loginPage", "registerPage", "welcomePage"].includes(pageId)) {
+                    page.style.display = 'flex';
+                } else if (pageId === 'dashboardMain') {
+                    page.style.display = 'flex';
+                } else {
+                    page.style.display = 'block';
+                }
+            }
         }
 
         function showAuth() { showPage('loginPage'); }
@@ -798,6 +1121,7 @@
 
         // ======== SELEÇÃO DE MENU ========
         function selectMenu(section) {
+            if (window.purchaseOpen) return;
             const logged = localStorage.getItem("lex_user");
             if (!logged) {
                 showNotification("error", "Erro", "Faça login primeiro!");
@@ -820,6 +1144,17 @@
                 showNotification("info", "Meu Perfil", "Sistema em desenvolvimento!");
                 return;
             }
+
+            // Esconder todas as páginas, exceto dashboard
+            document.querySelectorAll('.page').forEach(p => {
+                if (p.id === 'dashboardMain') {
+                    p.style.display = 'flex';
+                    p.classList.add('active');
+                } else {
+                    p.style.display = 'none';
+                    p.classList.remove('active');
+                }
+            });
 
             // Esconder todas as seções do dashboard
             document.querySelectorAll(".dashboard-section").forEach(sec => {
@@ -908,11 +1243,22 @@
             document.getElementById("dashboardMain").style.display = "none";
             document.getElementById("topNav").style.display = "none";
             document.getElementById("menuDropdown").style.display = "none";
+            // Garante que a tela de boas-vindas aparece centralizada
             showPage("welcomePage");
+            const welcome = document.getElementById("welcomePage");
+            if (welcome) {
+                welcome.classList.add('active');
+                welcome.style.display = 'flex';
+            }
         }
 
         // ======== PERSISTÊNCIA AO ABRIR ========
         window.onload = () => {
+            // Garante que o painel de compra nunca aparece animando ao carregar ou ao exibir a loja
+            var purchasePanel = document.getElementById('purchasePanel');
+            if (purchasePanel) {
+                purchasePanel.classList.remove('purchase-modal-enter', 'purchase-modal-enter-active', 'purchase-modal-exit', 'purchase-modal-exit-active');
+            }
             const user = localStorage.getItem("lex_user");
             if (!user) {
                 localStorage.removeItem("lex_menu");
