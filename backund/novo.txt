@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/img/icon.png">
+    <title>Lex City Roleplay</title>
+    <style>
+        /* Animação para modal de compra */
+        .purchase-modal-enter {
+            opacity: 0;
+            transform: scale(0.92) translateY(60px);
+            transition: opacity 0.4s, transform 0.4s;
+        }
+        .purchase-modal-enter-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .purchase-modal-exit {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transition: opacity 0.4s, transform 0.4s;
+        }
+        .purchase-modal-exit-active {
+            opacity: 0;
+            transform: scale(0.92) translateY(60px);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+            overflow-x: hidden;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .page.active {
+            display: flex;
+            opacity: 1;
+            animation: pulseIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        /* Centralização só para welcome/login/register */
+        #welcomePage.page.active,
+        #loginPage.page.active,
+        #registerPage.page.active {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-direction: column !important;
+            z-index: 1001 !important;
+            background: transparent;
+        }
+        .page.exit {
+            animation: pulseOut 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes pulseIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes pulseOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Página Inicial */
+        .welcome-container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        .title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff,
+                0 0 40px #00ffff,
+                0 0 70px #00ffff,
+                0 0 80px #00ffff,
+                0 0 100px #00ffff;
+            animation: flicker 1.5s infinite alternate;
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+        }
+        .subtitle {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: #fff;
+            text-shadow: 
+                0 0 10px #ff00ff,
+                0 0 20px #ff00ff,
+                0 0 30px #ff00ff,
+                0 0 40px #ff00ff;
+            animation: pulse 2s infinite;
+            margin-bottom: 2rem;
+        }
+        .btn-primary {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            font-size: 1.25rem;
+            color: #fff;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 0 20px #ff00ff80;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            box-shadow: 0 0 30px #00ffff80;
+            transform: scale(1.05);
+        }
+        /* GIF de fundo na tela de boas-vindas */
+        .welcome-bg-gif {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            width: 4000px;
+            max-width: 65vw;
+            opacity: 0.60;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+        .welcome-bg-gif2 {
+            position: absolute;
+            top: 50%;
+            left: 75%;
+            transform: translate(-50%, -50%);
+            width: 4000px;
+            max-width: 65vw;
+            opacity: 0.60;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+        /* Sistema de Auth */
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            perspective: 1000px;
+        }
+        .auth-card {
+            background: rgba(15, 15, 25, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        .auth-title {
+            font-size: 2rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px #00ffff;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .form-label {
+            display: block;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            cursor: pointer;
+            color: #ff00ff;
+            transition: all 0.3s;
+        }
+        .password-toggle:hover {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 1rem;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.5);
+        }
+        .switch-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #aaa;
+        }
+        .switch-link {
+            color: #00ffff;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .switch-link:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        /* Sistema de Notificações */
+        .notification-container {
+            position: fixed;
+            right: -400px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9999;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .notification-container.show {
+            right: 30px;
+        }
+        .notification {
+            background: linear-gradient(135deg, rgba(15, 15, 25, 0.98), rgba(25, 25, 40, 0.98));
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 1.2rem 1.5rem;
+            min-width: 320px;
+            max-width: 400px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 2s infinite;
+        }
+        .notification.success {
+            border-color: #00ff00;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 255, 0, 0.4);
+        }
+        .notification.error {
+            border-color: #ff0000;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.4);
+        }
+        .notification.info {
+            border-color: #00ffff;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 255, 255, 0.4);
+        }
+        .notification-icon {
+            font-size: 2rem;
+            min-width: 40px;
+            text-align: center;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 10px currentColor;
+        }
+        .notification.success .notification-title {
+            color: #00ff00;
+        }
+        .notification.error .notification-title {
+            color: #ff0000;
+        }
+        .notification.info .notification-title {
+            color: #00ffff;
+        }
+        .notification-message {
+            color: #fff;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        @media (max-width: 768px) {
+            .notification-container {
+                right: -350px;
+            }
+            .notification-container.show {
+                right: 10px;
+            }
+            .notification {
+                min-width: 280px;
+                max-width: calc(100vw - 20px);
+            }
+        }
+        /* Grid de fundo */
+        .grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+        }
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: float 3s infinite;
+            z-index: 0;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #00ffff,
+                    0 0 30px #00ffff,
+                    0 0 40px #00ffff,
+                    0 0 70px #00ffff,
+                    0 0 80px #00ffff,
+                    0 0 100px #00ffff;
+            }
+            20%, 24%, 55% { text-shadow: none; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* Dashboard */
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            display: block !important;
+            position: static;
+            left: auto;
+            transform: none;
+        }
+        .dashboard-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 1rem;
+        }
+        .welcome-user {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            margin-bottom: 3rem;
+        }
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            padding: 0 1rem;
+        }
+        .dash-card {
+            background: rgba(15, 15, 25, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .dash-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: shine 4s infinite;
+        }
+        .dash-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.5);
+            border-color: #ff00ff;
+        }
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px #00ffff);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            color: #00ffff;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        .card-desc {
+            color: #aaa;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .card-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .card-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+        }
+        .btn-logout {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(90deg, #ff0000, #ff00ff);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            margin-top: 2rem;
+        }
+        .btn-logout:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+        }
+        @media (max-width: 768px) {
+            .auth-card {
+                padding: 1.5rem;
+            }
+            body {
+                padding: 10px;
+            }
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+    <style>
+        .header {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .menu-toggle {
+            background: rgba(0,255,255,0.2);
+            border: 1px solid #00ffff;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: 0.2s;
+        }
+        .menu-toggle:hover {
+            background: rgba(0,255,255,0.35);
+            transform: scale(1.05);
+        }
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 160px;
+            background: rgba(10,10,20,0.85);
+            border: 1px solid #00ffff30;
+            box-shadow: 0 0 15px rgba(0,255,255,0.35);
+            border-radius: 12px;
+            padding: 10px 0;
+            animation: fadeIn 0.25s ease;
+        }
+        .menu-dropdown ul {
+            list-style: none;
+        }
+        .menu-dropdown li {
+            padding: 10px 14px;
+            color: #ddd;
+            cursor: pointer;
+            transition: 0.25s;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .menu-dropdown li:hover {
+            background: rgba(0,255,255,0.25);
+            color: #fff;
+        }
+        @keyframes fadeIn {
+            from { opacity:0; transform: translateY(-10px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+        #topNav {
+            opacity: 0;
+            transform: translateY(-15px);
+            transition: all 0.4s ease;
+        }
+        #topNav.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dashboard-pulse {
+            animation: pulseDash 0.4s ease;
+        }
+        @keyframes pulseDash {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .menu-dropdown li.active {
+            background: rgba(0,255,255,0.25);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header id="topNav" class="header">
+        <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+        <nav class="menu-dropdown" id="menuDropdown">
+            <ul>
+                <li data-page="home" onclick="selectMenu('home')">🏠 Home</li>
+                <li data-page="rules" onclick="selectMenu('rules')">📜 Regras</li>
+                <li data-page="shop" onclick="selectMenu('shop')">🛒 Shoping / Loja</li>
+                <li data-page="profile" onclick="selectMenu('profile')">👤 Meu Perfil</li>
+                <li onclick="handleLogout()">🚪 Sair</li>
+            </ul>
+        </nav>
+    </header>
+    <div class="grid"></div>
+    <!-- Sistema de Notificações -->
+    <div class="notification-container" id="notificationContainer"></div>
+    <!-- Página Inicial -->
+    <div class="page active" id="welcomePage">
+        <div class="welcome-container">
+            <img src="/gifs/person-david.gif" alt="Person David" class="welcome-bg-gif">
+            <img src="/gifs/person-carol.gif" alt="Person David 2" class="welcome-bg-gif2">
+            <h1 class="title" style="position: relative; z-index: 2;">LEX CITY ROLEPLAY</h1>
+            <p class="subtitle" style="position: relative; z-index: 2;">Bem vindo(a), acesse já o painel da Lex City Roleplay</p>
+            <button class="btn-primary" onclick="showAuth()" style="position: relative; z-index: 2;">< Sim Bora ></button>
+        </div>
+    </div>
+    <!-- Página de Registro -->
+    <div class="page" id="registerPage">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">REGISTRO</h2>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label class="form-label">Usuário</label>
+                        <input type="text" class="form-input" id="regUsername" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Número de Telefone (Opcional)</label>
+                        <input type="tel" class="form-input" id="regPhone">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-input" id="regPassword" required minlength="6">
+                        <span class="password-toggle" onclick="togglePassword('regPassword')">👁️</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Senha</label>
+                        <input type="password" class="form-input" id="regConfirmPassword" required minlength="6">
+                        <span class="password-toggle" onclick="togglePassword('regConfirmPassword')">👁️</span>
+                    </div>
+                    <button type="submit" class="btn-submit">REGISTRAR</button>
+                </form>
+                <div class="switch-text">
+                    Já tem uma conta? <span class="switch-link" onclick="showLogin()">Faça Login</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Página de Login -->
+    <div class="page" id="loginPage">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">LOGIN</h2>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Usuário</label>
+                        <input type="text" class="form-input" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-input" id="loginPassword" required>
+                        <span class="password-toggle" onclick="togglePassword('loginPassword')">👁️</span>
+                    </div>
+                    <button type="submit" class="btn-submit">ENTRAR</button>
+                </form>
+                <div class="switch-text">
+                    Não tem uma conta? <span class="switch-link" onclick="showRegister()">Registre-se</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Dashboard -->
+    <div class="dashboard-container page" id="dashboardMain" style="display:none;">
+        <!-- HOME -->
+        <div class="dashboard-section" data-section="home">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">LEX CITY ROLEPLAY</h1>
+                <p class="welcome-user">Bem-vindo(a), <span id="usernameDisplay"></span>!</p>
+            </div>
+            <div class="dashboard-cards" id="shopCards">
+                <div class="dash-card">
+                    <div class="card-icon">🎮</div>
+                    <h3 class="card-title">Jogar Agora</h3>
+                    <p class="card-desc">Conecte-se ao servidor e comece sua aventura</p>
+                    <button class="card-btn" onclick="showNotification('info', 'Servidor', '151.242.227.221:7777')">Ver IP</button>
+                </div>
+                <div class="dash-card">
+                    <div class="card-icon">💬</div>
+                    <h3 class="card-title">Discord</h3>
+                    <p class="card-desc">Junte-se à nossa comunidade</p>
+                    <button class="card-btn" onclick="showNotification('info', 'Discord', 'https://discord.gg/4HGUhz3f6s')">Entrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGRAS -->
+        <div class="dashboard-section" data-section="rules" style="display:none;">
+            <h2 class="dashboard-title">📜 Regras do Servidor</h2>
+            <div style="text-align:left; max-width:700px; margin:auto;">
+                <h3 style="color:#00ffff;">Regras Gerais</h3>
+                <p style="color:#aaa;">
+                    - Sem cheats, hacks ou macros<br>
+                    - Respeite outros jogadores<br>
+                    - Proibido spam e flood<br>
+                    - Não abusar de bugs
+                </p>
+                <br>
+                <h3 style="color:#00ffff;">Regras ANT-RP</h3>
+                <p style="color:#aaa;">
+                    - Proibido metagaming (usar conhecimento externo)<br>
+                    - Não force roleplay (NFRP)<br>
+                    - Respeite o "powergaming" e "vDM"<br>
+                    - Mantenha coerência com sua personagem
+                </p>
+            </div>
+        </div>
+
+        <!-- SHOPING / LOJA -->
+        <div class="dashboard-section" data-section="shop" style="display:none;">
+            <h2 class="dashboard-title">🛒 Shoping / Loja</h2>
+            <h3 style="color:#00ffff;text-align:left;margin:2rem 0 1rem 0;font-size:1.4rem;">💸 Coins</h3>
+            <div class="dashboard-cards">
+                <!-- 25 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="25 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">25 Lex Coins + 10%</h3>
+                    <p class="card-desc">Obtenha 27,50 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 10,00</div>
+                    <button class="card-btn" onclick="openPurchase('25 Lex Coins + 10%', 'Obtenha 27,50 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 10,00', ['27,50 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 50 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="50 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">50 Lex Coins + 20%</h3>
+                    <p class="card-desc">Obtenha 60 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 20,00</div>
+                    <button class="card-btn" onclick="openPurchase('50 Lex Coins + 20%', 'Obtenha 60 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 20,00', ['60 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 100 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="100 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">100 Lex Coins + 40%</h3>
+                    <p class="card-desc">Obtenha 140 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 40,00</div>
+                    <button class="card-btn" onclick="openPurchase('100 Lex Coins + 40%', 'Obtenha 140 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 40,00', ['140 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 250 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="250 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">250 Lex Coins + 50%</h3>
+                    <p class="card-desc">Obtenha 375 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 50,00</div>
+                    <button class="card-btn" onclick="openPurchase('250 Lex Coins + 50%', 'Obtenha 375 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 50,00', ['375 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 350 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="350 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">350 Lex Coins + 60%</h3>
+                    <p class="card-desc">Obtenha 560 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 60,00</div>
+                    <button class="card-btn" onclick="openPurchase('350 Lex Coins + 60%', 'Obtenha 560 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 60,00', ['560 lexcoins'])">Comprar</button>
+                </div>
+                <!-- 500 Lex Coins -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitycoins.jpg" alt="500 Lex Coins" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">500 Lex Coins + 70%</h3>
+                    <p class="card-desc">Obtenha 850 lexcoins e aproveite ao máximo o Roleplay com mais recursos.</p>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 70,00</div>
+                    <button class="card-btn" onclick="openPurchase('500 Lex Coins + 70%', 'Obtenha 850 lexcoins e aproveite ao máximo o Roleplay com mais recursos.', 'R$ 70,00', ['850 lexcoins'])">Comprar</button>
+                </div>
+            </div>
+            <h3 style="color:#00ffff;text-align:left;margin:2rem 0 1rem 0;font-size:1.4rem;">🎁 Caixas Lex</h3>
+            <div class="dashboard-cards">
+                <!-- LEX VAPOR -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcityvapor.jpg" alt="Lex Vapor" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">LEX VAPOR 💨</h3>
+                    <ul class="card-desc" style="text-align:left;color:#aaa;font-size:0.95rem;margin-bottom:1rem;">
+                        <li>+40% ganho em trabalho</li>
+                        <li>100% de experiência</li>
+                        <li>50% ao ressuscitar</li>
+                        <li>Chama veículo para si</li>
+                        <li>Prioridade na fila do server</li>
+                        <li>Chat vip com os Server Booster</li>
+                        <li>Salário no pay day 500,00</li>
+                        <li>Cargo de Destaque no servidor</li>
+                    </ul>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 80,00</div>
+                    <button class="card-btn" onclick="openPurchase('LEX VAPOR 💨', '', 'R$ 80,00', [
+                        '+40% ganho em trabalho',
+                        '100% de experiência',
+                        '50% ao ressuscitar',
+                        'Chama veículo para si',
+                        'Prioridade na fila do server',
+                        'Chat vip com os Server Booster',
+                        'Salário no pay day 500,00',
+                        'Cargo de Destaque no servidor'])">Comprar</button>
+                </div>
+                <!-- LEX ELITE DO MORRO -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitymorro.jpg" alt="Lex Elite do Morro" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">LEX ELITE DO MORRO ⛰</h3>
+                    <ul class="card-desc" style="text-align:left;color:#aaa;font-size:0.95rem;margin-bottom:1rem;">
+                        <li>Todos benefícios do Lex Vapor +</li>
+                        <li>Redução 25% prisão na cadeia e staff</li>
+                        <li>Salário 1.500 reais no pay day</li>
+                        <li>Abrir ticket exclusivo na área vip</li>
+                        <li>Participa de sorteio mensal (carros, skins, acessórios, etc)</li>
+                        <li>Carro épico (30 dias, renovar para manter)</li>
+                    </ul>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 120,00</div>
+                    <button class="card-btn" onclick="openPurchase('LEX ELITE DO MORRO ⛰', '', 'R$ 120,00', [
+                        'Todos benefícios do Lex Vapor +',
+                        'Redução 25% prisão na cadeia e staff',
+                        'Salário 1.500 reais no pay day',
+                        'Abrir ticket exclusivo na área vip',
+                        'Participa de sorteio mensal (carros, skins, acessórios, etc)',
+                        'Carro épico (30 dias, renovar para manter)'])">Comprar</button>
+                </div>
+                <!-- LEX MAGNATA -->
+                <div class="dash-card">
+                    <img src="/img/Shoping/lexcitymagnata.jpg" alt="Lex Magnata" style="width:100%;max-width:120px;border-radius:12px;margin-bottom:1rem;box-shadow:0 0 15px #00ffff80;">
+                    <h3 class="card-title">LEX MAGNATA 💰</h3>
+                    <ul class="card-desc" style="text-align:left;color:#aaa;font-size:0.95rem;margin-bottom:1rem;">
+                        <li>Todos benefícios do Lex Vapor e Elite do Morro +</li>
+                        <li>Escolhe 1 carro lendário (30 dias)</li>
+                        <li>Salário 3.000 reais no pay day</li>
+                        <li>Skin lendária exclusiva (30 dias)</li>
+                        <li>Redução 50% da prisão e staff</li>
+                        <li>Acessórios exclusivos</li>
+                        <li>Acesso a call da diretoria</li>
+                        <li>Participa de reuniões com donos e influenciadores</li>
+                        <li>Leva ideias e críticas ao projeto</li>
+                        <li>Participa de eventos exclusivos</li>
+                    </ul>
+                    <div style="color:#ff00ff;font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">R$ 200,00</div>
+                    <button class="card-btn" onclick="openPurchase('LEX MAGNATA 💰', '', 'R$ 200,00', [
+                        'Todos benefícios do Lex Vapor e Elite do Morro +',
+                        'Escolhe 1 carro lendário (30 dias)',
+                        'Salário 3.000 reais no pay day',
+                        'Skin lendária exclusiva (30 dias)',
+                        'Redução 50% da prisão e staff',
+                        'Acessórios exclusivos',
+                        'Acesso a call da diretoria',
+                        'Participa de reuniões com donos e influenciadores',
+                        'Leva ideias e críticas ao projeto',
+                        'Participa de eventos exclusivos'])">Comprar</button>
+                </div>
+            </div>
+        </div>
+        <!-- PERFIL -->
+        <div class="dashboard-section" data-section="profile" style="display:none;">
+            <!-- Vazio. A notificação será disparada via JS -->
+        </div>
+
+    <!-- Página de Compra (fora dos cards) -->
+    <div class="page" id="purchasePage" style="z-index: 1000; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: rgba(10,10,20,0.92);">
+        <div id="purchasePanel" style="width:100%;max-width:500px;max-height:90vh;overflow-y:auto;background:rgba(15,15,25,0.97);border-radius:18px;padding:2rem 1.5rem;box-shadow:0 0 30px #00ffff30;position:relative;">
+            <button onclick="backToShop()" style="background:none;border:none;color:#00ffff;font-size:1.1rem;display:flex;align-items:center;gap:6px;cursor:pointer;position:absolute;left:1.5rem;top:1.5rem;"><span style='font-size:1.3rem;'>&#8592;</span> Voltar</button>
+            <div style="margin-top:2.5rem;text-align:center;">
+                <div id="purchaseTitle" style="font-size:1.3rem;color:#fff;font-weight:bold;margin-bottom:0.7rem;"></div>
+                <div id="purchasePrice" style="color:#ff00ff;font-size:1.1rem;font-weight:bold;margin-bottom:1.2rem;"></div>
+                <div id="purchaseDesc" style="color:#aaa;font-size:1rem;margin-bottom:1.2rem;"></div>
+                <div id="purchaseRewards" style="margin-bottom:1.5rem;"></div>
+                <div style="margin-bottom:1.2rem;text-align:left;">
+                    <label for="paymentMethod" style="color:#fff;font-weight:bold;">Método de Pagamento <span style="color:#ff00ff">*</span></label>
+                    <select id="paymentMethod" style="width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;" onchange="updatePaymentForm()">
+                        <option value="">Selecione...</option>
+                        <option value="pix">Pix</option>
+                        <option value="boleto">Boleto</option>
+                    </select>
+                </div>
+                <div id="paymentForm"></div>
+                <div style="margin-top:2.5rem;text-align:center;">
+                    <div style="color:#fff;font-weight:bold;margin-bottom:0.7rem;">Métodos de pagamento aceitos:</div>
+                    <div style="display:flex;justify-content:center;gap:2rem;">
+                        <span title="Pix"> <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#00E676"/><path d="M24 14c-2.2 0-4.3.9-5.9 2.4l-1.7 1.7c-3.2 3.2-3.2 8.3 0 11.5l1.7 1.7c3.2 3.2 8.3 3.2 11.5 0l1.7-1.7c3.2-3.2 3.2-8.3 0-11.5l-1.7-1.7C28.3 14.9 26.2 14 24 14z" fill="#fff"/></svg></span>
+                        <span title="Boleto"> <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#222"/><rect x="10" y="14" width="28" height="20" rx="3" fill="#fff"/><rect x="13" y="18" width="22" height="2" rx="1" fill="#222"/><rect x="13" y="22" width="22" height="2" rx="1" fill="#222"/><rect x="13" y="26" width="22" height="2" rx="1" fill="#222"/></svg></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ======== COMPRA DINÂMICA ========
+    function openPurchase(title, desc, price, rewards) {
+        // Esconde só a seção da loja
+        var shopSection = document.querySelector('.dashboard-section[data-section="shop"]');
+        if (shopSection) shopSection.style.display = 'none';
+        // Mostra tela de compra
+        var purchasePage = document.getElementById('purchasePage');
+        var purchasePanel = document.getElementById('purchasePanel');
+        if (purchasePage && purchasePanel) {
+            // Remove classes de animação antes de exibir
+            purchasePanel.classList.remove('purchase-modal-enter', 'purchase-modal-enter-active', 'purchase-modal-exit', 'purchase-modal-exit-active');
+            purchasePage.style.display = 'flex';
+            purchasePage.classList.add('active');
+            // Força reflow para garantir que a animação comece do estado correto
+            void purchasePanel.offsetWidth;
+            // Animação de entrada
+            purchasePanel.classList.add('purchase-modal-enter');
+            setTimeout(() => {
+                purchasePanel.classList.add('purchase-modal-enter-active');
+            }, 10);
+        }
+        // Preenche dados
+        var titleEl = document.getElementById('purchaseTitle');
+        var priceEl = document.getElementById('purchasePrice');
+        var descEl = document.getElementById('purchaseDesc');
+        var rewardsEl = document.getElementById('purchaseRewards');
+        if (titleEl) titleEl.textContent = `Comprando: ${title}`;
+        if (priceEl) priceEl.textContent = price;
+        if (descEl) descEl.textContent = desc;
+        let rewardsHtml = '';
+        if (rewards && rewards.length > 0) {
+            rewardsHtml = '<div style="color:#fff;font-weight:bold;margin-bottom:0.3rem;">Recompensas:</div><ul style="color:#00ffff;text-align:left;max-width:350px;margin:auto;">';
+            for (const r of rewards) rewardsHtml += `<li style='margin-bottom:0.2rem;'>${r}</li>`;
+            rewardsHtml += '</ul>';
+        }
+        if (rewardsEl) rewardsEl.innerHTML = rewardsHtml;
+        var methodEl = document.getElementById('paymentMethod');
+        var formEl = document.getElementById('paymentForm');
+        if (methodEl) methodEl.value = '';
+        if (formEl) formEl.innerHTML = '';
+    }
+
+    function backToShop() {
+        // Animação de saída
+        var purchasePage = document.getElementById('purchasePage');
+        var purchasePanel = document.getElementById('purchasePanel');
+        if (purchasePage && purchasePanel) {
+            purchasePanel.classList.remove('purchase-modal-enter', 'purchase-modal-enter-active');
+            purchasePanel.classList.add('purchase-modal-exit');
+            setTimeout(() => {
+                purchasePanel.classList.add('purchase-modal-exit-active');
+            }, 10);
+            setTimeout(() => {
+                purchasePage.style.display = 'none';
+                purchasePage.classList.remove('active');
+                purchasePanel.classList.remove('purchase-modal-exit', 'purchase-modal-exit-active');
+            }, 400);
+        }
+        // Mostra só a seção shop
+        var shopSection = document.querySelector('.dashboard-section[data-section="shop"]');
+        if (shopSection) shopSection.style.display = 'block';
+    }
+
+    function updatePaymentForm() {
+        const method = document.getElementById('paymentMethod').value;
+        let html = '';
+        if (method === 'pix') {
+            html = `
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Whatsapp <span style='color:#ff00ff'>*</span></label>
+                    <input type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
+                </div>
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Seu Nome <span style='color:#ff00ff'>*</span></label>
+                    <input type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
+                </div>
+                <div style='background:#0a0a0a;border-radius:10px;padding:1rem 0.7rem;margin-bottom:1rem;color:#fff;'>
+                    <div style='font-weight:bold;color:#00ffff;margin-bottom:0.3rem;'>Faça o PIX para:</div>
+                    <div style='font-size:1.1rem;color:#fff;margin-bottom:0.3rem;'>lexcitypix@gmail.com</div>
+                    <div style='color:#aaa;font-size:0.95rem;'>Após o pagamento, envie o comprovante para o Whatsapp informado acima para agilizar a liberação.</div>
+                </div>
+            `;
+        } else if (method === 'boleto') {
+            html = `
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Whatsapp <span style='color:#ff00ff'>*</span></label>
+                    <input type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
+                </div>
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Seu Nome <span style='color:#ff00ff'>*</span></label>
+                    <input type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
+                </div>
+                <div style='background:#0a0a0a;border-radius:10px;padding:1rem 0.7rem;margin-bottom:1rem;color:#fff;'>
+                    <div style='font-weight:bold;color:#00ffff;margin-bottom:0.3rem;'>Boleto gerado após envio dos dados.</div>
+                    <div style='color:#aaa;font-size:0.95rem;'>O boleto será enviado para o Whatsapp informado acima. Após o pagamento, envie o comprovante para agilizar a liberação.</div>
+                </div>
+            `;
+        }
+        document.getElementById('paymentForm').innerHTML = html;
+    }
+    </script>
+                </div>
+            </div>
+        </div>
+        <!-- PERFIL -->
+        <div class="dashboard-section" data-section="profile" style="display:none;">
+            <!-- Vazio. A notificação será disparada via JS -->
+        </div>
+    </div>
+
+    <script>
+        // ======== PARTÍCULAS ========
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 3 + 's';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(particle);
+        }
+
+        // ======== NOTIFICAÇÕES ========
+        let notificationTimeout;
+
+        function showNotification(type, title, message) {
+            const container = document.getElementById('notificationContainer');
+            
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+                container.classList.remove('show');
+            }
+
+            const icons = {
+                success: '✔️',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+
+            container.innerHTML = `
+                <div class="notification ${type}">
+                    <div class="notification-icon">${icons[type] || '📢'}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => container.classList.add('show'), 100);
+
+            notificationTimeout = setTimeout(() => {
+                container.classList.remove('show');
+                setTimeout(() => container.innerHTML = '', 500);
+            }, 4000);
+        }
+
+        // ======== PÁGINAS ========
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+                p.style.display = 'none';
+            });
+            const page = document.getElementById(pageId);
+            if (page) {
+                page.classList.add('active');
+                if (["loginPage", "registerPage", "welcomePage"].includes(pageId)) {
+                    page.style.display = 'flex';
+                } else if (pageId === 'dashboardMain') {
+                    page.style.display = 'flex';
+                } else {
+                    page.style.display = 'block';
+                }
+            }
+        }
+
+        function showAuth() { showPage('loginPage'); }
+        function showRegister() { showPage('registerPage'); }
+        function showLogin() { showPage('loginPage'); }
+
+        // ======== TOGGLE SENHA ========
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // ======== MENU DROPDOWN ========
+        function toggleMenu() {
+            const menu = document.getElementById("menuDropdown");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+
+        // ======== SELEÇÃO DE MENU ========
+        function selectMenu(section) {
+            if (window.purchaseOpen) return;
+            const logged = localStorage.getItem("lex_user");
+            if (!logged) {
+                showNotification("error", "Erro", "Faça login primeiro!");
+                return;
+            }
+
+            localStorage.setItem("lex_menu", section);
+
+            // Marcar item ativo
+            document.querySelectorAll("#menuDropdown li").forEach(li => {
+                li.classList.remove("active");
+                if (li.dataset.page === section) li.classList.add("active");
+            });
+
+            // Fechar dropdown
+            document.getElementById("menuDropdown").style.display = "none";
+
+            // Ação especial: perfil → notificação
+            if (section === "profile") {
+                showNotification("info", "Meu Perfil", "Sistema em desenvolvimento!");
+                return;
+            }
+
+            // Esconder todas as páginas, exceto dashboard
+            document.querySelectorAll('.page').forEach(p => {
+                if (p.id === 'dashboardMain') {
+                    p.style.display = 'flex';
+                    p.classList.add('active');
+                } else {
+                    p.style.display = 'none';
+                    p.classList.remove('active');
+                }
+            });
+
+            // Esconder todas as seções do dashboard
+            document.querySelectorAll(".dashboard-section").forEach(sec => {
+                sec.style.display = "none";
+            });
+
+            // Mostrar seção solicitada
+            const target = document.querySelector(`[data-section="${section}"]`);
+            if (target) {
+                target.style.display = "block";
+            }
+        }
+
+        // ======== LOGIN/REGISTRO ========
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = loginUsername.value;
+            const password = loginPassword.value;
+            if (!username || !password) {
+                showNotification("error", "Erro", "Preencha todos os campos.");
+                return;
+            }
+            try {
+                const res = await fetch("https://convinced-combine-mailman-tribes.trycloudflare.com/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (!res.ok) return showNotification("error", "Falha", data.message);
+                localStorage.setItem("lex_user", username);
+                document.getElementById("usernameDisplay").textContent = username;
+                showNotification("success", "Bem-vindo!", username);
+                showDashboard();
+            } catch {
+                showNotification("error", "Erro", "Servidor offline.");
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const u = regUsername.value;
+            const p = regPassword.value;
+            const c = regConfirmPassword.value;
+            const phone = regPhone.value;
+            if (p !== c) return showNotification("error", "Erro", "Senhas não coincidem.");
+            try {
+                const res = await fetch("https://convinced-combine-mailman-tribes.trycloudflare.com/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: u, password: p, phone })
+                });
+                const data = await res.json();
+                if (!res.ok) return showNotification("error", "Falha", data.message);
+                localStorage.setItem("lex_user", u);
+                document.getElementById("usernameDisplay").textContent = u;
+                showNotification("success", "Conta criada", "Bem-vindo!");
+                showDashboard();
+            } catch {
+                showNotification("error", "Erro", "Servidor offline");
+            }
+        }
+
+        // ======== MOSTRAR DASHBOARD ========
+        function showDashboard() {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById("dashboardMain").style.display = "block";
+
+            const nav = document.getElementById("topNav");
+            nav.style.display = "block";
+            nav.classList.add("visible");
+
+            document.querySelectorAll(".dashboard-section").forEach(sec => {
+                sec.style.display = "none";
+            });
+
+            const savedMenu = localStorage.getItem("lex_menu") || "home";
+            selectMenu(savedMenu);
+        }
+
+        // ======== LOGOUT ========
+        function handleLogout() {
+            showNotification("info", "Desconectado", "Até logo!");
+            localStorage.removeItem("lex_user");
+            localStorage.removeItem("lex_menu");
+            document.getElementById("dashboardMain").style.display = "none";
+            document.getElementById("topNav").style.display = "none";
+            document.getElementById("menuDropdown").style.display = "none";
+            // Garante que a tela de boas-vindas aparece centralizada
+            showPage("welcomePage");
+            const welcome = document.getElementById("welcomePage");
+            if (welcome) {
+                welcome.classList.add('active');
+                welcome.style.display = 'flex';
+            }
+        }
+
+        // ======== PERSISTÊNCIA AO ABRIR ========
+        window.onload = () => {
+            // Garante que o painel de compra nunca aparece animando ao carregar ou ao exibir a loja
+            var purchasePanel = document.getElementById('purchasePanel');
+            if (purchasePanel) {
+                purchasePanel.classList.remove('purchase-modal-enter', 'purchase-modal-enter-active', 'purchase-modal-exit', 'purchase-modal-exit-active');
+            }
+            const user = localStorage.getItem("lex_user");
+            if (!user) {
+                localStorage.removeItem("lex_menu");
+                showPage("welcomePage");
+                return;
+            }
+            document.getElementById("usernameDisplay").textContent = user;
+            showDashboard();
+        };
+
+        // ======== FECHAR MENU AO CLICAR FORA ========
+        document.addEventListener("click", (e) => {
+            const dropdown = document.getElementById("menuDropdown");
+            const topNav = document.getElementById("topNav");
+            if (dropdown.style.display === "block" && !topNav.contains(e.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
