@@ -911,15 +911,13 @@
                     <select id="paymentMethod" style="width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;" onchange="updatePaymentForm()">
                         <option value="">Selecione...</option>
                         <option value="pix">Pix</option>
-                        <option value="boleto">Boleto</option>
                     </select>
                 </div>
                 <div id="paymentForm"></div>
                 <div style="margin-top:2.5rem;text-align:center;">
-                    <div style="color:#fff;font-weight:bold;margin-bottom:0.7rem;">Métodos de pagamento aceitos:</div>
+                    <div style="color:#fff;font-weight:bold;margin-bottom:0.7rem;">Método de pagamento aceito:</div>
                     <div style="display:flex;justify-content:center;gap:2rem;">
-                        <span title="Pix"> <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#00E676"/><path d="M24 14c-2.2 0-4.3.9-5.9 2.4l-1.7 1.7c-3.2 3.2-3.2 8.3 0 11.5l1.7 1.7c3.2 3.2 8.3 3.2 11.5 0l1.7-1.7c3.2-3.2 3.2-8.3 0-11.5l-1.7-1.7C28.3 14.9 26.2 14 24 14z" fill="#fff"/></svg></span>
-                        <span title="Boleto"> <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#222"/><rect x="10" y="14" width="28" height="20" rx="3" fill="#fff"/><rect x="13" y="18" width="22" height="2" rx="1" fill="#222"/><rect x="13" y="22" width="22" height="2" rx="1" fill="#222"/><rect x="13" y="26" width="22" height="2" rx="1" fill="#222"/></svg></span>
+                        <span title="Pix"><img src="/img/Shoping/pix.jpg" alt="Pix" width="36" height="36" style="border-radius:8px;box-shadow:0 0 8px #00E67680;"></span>
                     </div>
                 </div>
             </div>
@@ -997,45 +995,72 @@
             html = `
                 <div style='margin-bottom:1rem;'>
                     <label style='color:#fff;'>Whatsapp <span style='color:#ff00ff'>*</span></label>
-                    <input type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
+                    <input id='pixWhatsapp' type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
                 </div>
                 <div style='margin-bottom:1rem;'>
                     <label style='color:#fff;'>Seu Nome <span style='color:#ff00ff'>*</span></label>
-                    <input type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
+                    <input id='pixNome' type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
+                </div>
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>Nick In-Game <span style='color:#ff00ff'>*</span></label>
+                    <input id='pixNick' type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nick no servidor' required>
+                </div>
+                <div style='margin-bottom:1rem;'>
+                    <label style='color:#fff;'>IDX Da Conta <span style='color:#ff00ff'>*</span></label>
+                    <input id='pixIdx' type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu IDX da conta' required>
                 </div>
                 <div style='background:#0a0a0a;border-radius:10px;padding:1rem 0.7rem;margin-bottom:1rem;color:#fff;'>
                     <div style='font-weight:bold;color:#00ffff;margin-bottom:0.3rem;'>Faça o PIX para:</div>
-                    <div style='font-size:1.1rem;color:#fff;margin-bottom:0.3rem;'>ATENÇÃO EM BREVE...</div>
+                    <div style='font-size:1.1rem;color:#fff;margin-bottom:0.3rem;'>Clique em Comprar...</div>
                     <div style='color:#aaa;font-size:0.95rem;'>Após o pagamento, envie o comprovante para o Whatsapp informado acima para agilizar a liberação.</div>
                 </div>
-            `;
-        } else if (method === 'boleto') {
-            html = `
-                <div style='margin-bottom:1rem;'>
-                    <label style='color:#fff;'>Whatsapp <span style='color:#ff00ff'>*</span></label>
-                    <input type='tel' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu número de Whatsapp' required>
-                </div>
-                <div style='margin-bottom:1rem;'>
-                    <label style='color:#fff;'>Seu Nome <span style='color:#ff00ff'>*</span></label>
-                    <input type='text' style='width:100%;padding:0.6rem 1rem;border-radius:8px;border:2px solid #00ffff;background:#181828;color:#fff;font-size:1rem;margin-top:0.5rem;' placeholder='Seu nome completo' required>
-                </div>
-                <div style='background:#0a0a0a;border-radius:10px;padding:1rem 0.7rem;margin-bottom:1rem;color:#fff;'>
-                    <div style='font-weight:bold;color:#00ffff;margin-bottom:0.3rem;'>Boleto gerado após envio dos dados.</div>
-                    <div style='color:#aaa;font-size:0.95rem;'>O boleto será enviado para o Whatsapp informado acima. Após o pagamento, envie o comprovante para agilizar a liberação.</div>
-                </div>
+                <button type='button' class='btn-submit' style='width:100%;margin-top:1.2rem;' onclick='handlePixPurchase()'>Comprar</button>
             `;
         }
         document.getElementById('paymentForm').innerHTML = html;
     }
     </script>
-                </div>
-            </div>
-        </div>
-        <!-- PERFIL -->
-        <div class="dashboard-section" data-section="profile" style="display:none;">
-            <!-- Vazio. A notificação será disparada via JS -->
-        </div>
-    </div>
+
+    <script>
+        // ======== COMPRA PIX ========
+        function handlePixPurchase() {
+            const whatsapp = document.getElementById('pixWhatsapp').value.trim();
+            const nome = document.getElementById('pixNome').value.trim();
+            const nick = document.getElementById('pixNick').value.trim();
+            const idx = document.getElementById('pixIdx').value.trim();
+            if (!whatsapp || !nome || !nick || !idx) {
+                showNotification('error', 'ERRO', 'Colunas a serem preenchidas...');
+                return;
+            }
+
+            fetch('https://ata-eagles-directories-shopping.trycloudflare.com/api/compra-pix', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    whatsapp,
+                    nome,
+                    nick,
+                    idxConta: idx
+                })
+            })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok) {
+                    showNotification('error', 'Erro', data.message || 'Erro ao registrar compra.');
+                    return;
+                }
+                showNotification('success', 'Sucesso', 'Compra registrada! Aguarde contato.');
+            })
+            .catch(() => {
+                showNotification('error', 'Erro', 'Não foi possível conectar ao servidor.');
+            });
+        }
+    </script>
+
+    <!-- PERFIL -->
+    <div class="dashboard-section" data-section="profile" style="display:none;">
+    <!-- Vazio. A notificação será disparada via JS -->
+</div>
 
     <script>
         // ======== PARTÍCULAS ========
