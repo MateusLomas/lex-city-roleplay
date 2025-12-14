@@ -641,6 +641,7 @@
                 <li data-page="rules" onclick="selectMenu('rules')">📜 Regras</li>
                 <li data-page="shop" onclick="selectMenu('shop')">🛒 Loja</li>
                 <li data-page="profile" onclick="selectMenu('profile')">👤 Meu Perfil</li>
+                <li data-page="info" onclick="selectMenu('info')">ℹ️ Informações</li>
                 <li onclick="handleLogout()">🚪 Sair</li>
             </ul>
         </nav>
@@ -726,7 +727,7 @@
                     <div class="card-icon">🎮</div>
                     <h3 class="card-title">Jogar Agora</h3>
                     <p class="card-desc">Conecte-se ao servidor e comece sua aventura</p>
-                    <button class="card-btn" onclick="showNotification('info', 'Servidor', '151.242.227.221:7777')">Ver IP</button>
+                    <button class="card-btn" onclick="showNotification('info', 'Servidor', 'Em Breve...')">Ver IP</button>
                 </div>
                 <div class="dash-card">
                     <div class="card-icon">💬</div>
@@ -743,18 +744,12 @@
             <div style="text-align:left; max-width:700px; margin:auto;">
                 <h3 style="color:#00ffff;">Regras Gerais</h3>
                 <p style="color:#aaa;">
-                    - Sem cheats, hacks ou macros<br>
-                    - Respeite outros jogadores<br>
-                    - Proibido spam e flood<br>
-                    - Não abusar de bugs
+                    Em Breve...
                 </p>
                 <br>
                 <h3 style="color:#00ffff;">Regras ANT-RP</h3>
                 <p style="color:#aaa;">
-                    - Proibido metagaming (usar conhecimento externo)<br>
-                    - Não force roleplay (NFRP)<br>
-                    - Respeite o "powergaming" e "vDM"<br>
-                    - Mantenha coerência com sua personagem
+                Em Breve...    
                 </p>
             </div>
         </div>
@@ -896,6 +891,17 @@
         <div class="dashboard-section" data-section="profile" style="display:none;">
             <!-- Vazio. A notificação será disparada via JS -->
         </div>
+
+         <!-- REGRAS -->
+        <div class="dashboard-section" data-section="info" style="display:none;">
+            <h2 class="dashboard-title">♦ Informações</h2>
+            <div style="text-align:left; max-width:700px; margin:auto;">
+                <h3 style="color:#00ffff;">Informações Importantes GERAIS:</h3>
+                <p style="color:#aaa;">
+                    Em Breve...</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Página de Compra (fora dos cards) -->
     <div class="page" id="purchasePage" style="z-index: 1000; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: rgba(10,10,20,0.92);">
